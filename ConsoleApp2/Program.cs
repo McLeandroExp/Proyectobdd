@@ -1,4 +1,5 @@
 ﻿
+using ConsoleApp2.Models;
 using Microsoft.Data.SqlClient;
 
 class Program
@@ -11,11 +12,10 @@ class Program
 
         bool salir = false;
 
-        int id;
 
         string connectionString = "Data Source = (LocalDB)\\MSSQLLocalDB; AttachDbFilename = C:\\Users\\lourd\\source\\repos\\ConsoleApp2\\ConsoleApp2\\Database1.mdf; Integrated Security = True";
 
-    
+        DataManaging dataManaging = new DataManaging(connectionString);
 
         while (!salir)
 
@@ -49,33 +49,7 @@ class Program
 
                     case 1:
 
-                        Console.Write("Ingresa el nombre: ");
-
-                        string name = Console.ReadLine();
-
-
-
-                        using (SqlConnection connection = new SqlConnection(connectionString))
-
-                        {
-
-                            connection.Open();
-
-                            using (SqlCommand command = new SqlCommand("INSERT INTO MiTabla (Nombre) VALUES (@Nombre)", connection))
-
-                            {
-
-                                command.Parameters.AddWithValue("@Nombre", name);
-
-                                command.ExecuteNonQuery();
-
-                            }
-
-                        }
-
-
-
-                        Console.WriteLine("Registro creado.");
+                        dataManaging.InsertarRegistro();
 
                         break;
 
@@ -83,63 +57,14 @@ class Program
 
                     case 2:
 
-                        using (SqlConnection connection = new SqlConnection(connectionString))
-                        {
-                            connection.Open();
-                            using (SqlCommand command = new SqlCommand("SELECT * FROM MiTabla", connection))
-                            {
-                                using (SqlDataReader reader = command.ExecuteReader())
-                                {
-                                    while (reader.Read())
-                                    {
-                                        int recordId = reader.GetInt32(0);
-                                        string recordName = reader.GetString(1);
-                                        Console.WriteLine($"\t| ID: {recordId} | Nombre: {recordName}");
-                                    }
-                                }
-                            }
-                            connection.Close(); // Cerrar la conexión después de utilizarla
-                        }
+                        dataManaging.MostrarRegistros();
+                        
                         break;
 
 
                     case 3:
 
-                        Console.Write("Ingresa el ID del registro a actualizar: ");
-
-                        id = int.Parse(Console.ReadLine());
-
-
-
-                        Console.Write("Ingresa el nuevo nombre: ");
-
-                        string newName = Console.ReadLine();
-
-
-
-                        using (SqlConnection connection = new SqlConnection(connectionString))
-
-                        {
-
-                            connection.Open();
-
-                            using (SqlCommand command = new SqlCommand("UPDATE MiTabla SET Nombre = @NewName WHERE Id = @Id", connection))
-
-                            {
-
-                                command.Parameters.AddWithValue("@NewName", newName);
-
-                                command.Parameters.AddWithValue("@Id", id);
-
-                                command.ExecuteNonQuery();
-
-                            }
-
-                        }
-
-
-
-                        Console.WriteLine("Registro actualizado.");
+                        dataManaging.ActualizarRegistro();
 
                         break;
 
@@ -147,33 +72,7 @@ class Program
 
                     case 4:
 
-                        Console.Write("Ingresa el ID del registro a eliminar: ");
-
-                        id = int.Parse(Console.ReadLine());
-
-
-
-                        using (SqlConnection connection = new SqlConnection(connectionString))
-
-                        {
-
-                            connection.Open();
-
-                            using (SqlCommand command = new SqlCommand("DELETE FROM MiTabla WHERE Id = @Id", connection))
-
-                            {
-
-                                command.Parameters.AddWithValue("@Id", id);
-
-                                command.ExecuteNonQuery();
-
-                            }
-
-                        }
-
-
-
-                        Console.WriteLine("Registro eliminado.");
+                        dataManaging.EliminarRegistro();
 
                         break;
 
